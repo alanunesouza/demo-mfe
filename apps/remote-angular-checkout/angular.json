@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/angular/angular-cli/main/packages/angular/cli/lib/config/schema.json",
+  "version": 1,
+  "projects": {
+    "remote-angular-checkout": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "checkout",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/remote-angular-checkout",
+            "index": "src/index.html",
+            "main": "src/main.single-spa.ts",
+            "polyfills": ["src/polyfills.ts"],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [],
+            "styles": ["src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "remote-angular-checkout:build:development",
+            "port": 4202
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "remote-angular-checkout:build:production"
+            },
+            "development": {
+              "buildTarget": "remote-angular-checkout:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://raw.githubusercontent.com/angular/angular-cli/main/packages/angular/cli/lib/config/schema.json",
+  "version": 1,
+  "projects": {
+    "remote-angular-sales": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "sales",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/remote-angular-sales",
+            "index": "src/index.html",
+            "main": "src/main.single-spa.ts",
+            "polyfills": ["src/polyfills.ts"],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [],
+            "styles": ["src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "buildTarget": "remote-angular-sales:build:development",
+            "port": 4201
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "remote-angular-sales:build:production"
+            },
+            "development": {
+              "buildTarget": "remote-angular-sales:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
