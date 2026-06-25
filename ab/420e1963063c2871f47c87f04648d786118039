@@ -1,0 +1,47 @@
+shared/mfe-events/index.js
+  s_3985d584f1916c::t_93fdb40733d2c7 1-26
+apps/shell-react/src/shared/event-bus.ts
+  s_3985d584f1916c::t_2d65c372a83b14 1
+apps/remote-angular-sales/package.json
+  s_3985d584f1916c::t_38c7821f2c9c55 9
+apps/remote-angular-checkout/package.json
+  s_3985d584f1916c::t_4c52f396389745 9
+shared/mfe-events/package.json
+  s_3985d584f1916c::t_5431af0655b2e9 1-16
+apps/remote-angular-checkout/package-lock.json
+  s_3985d584f1916c::t_5b90bb4651b813 17,32-35,3921-3923
+apps/shell-react/package-lock.json
+  s_3985d584f1916c::t_5b90bb4651b813 11,31-34,518-521
+apps/remote-angular-checkout/src/app/event-bus.ts
+  s_3985d584f1916c::t_ae91793bddf8d9 1
+apps/shell-react/src/styles.css
+  s_3985d584f1916c::t_1787be5945493a 3-8,25-27,35-39,41,43,46-51,54-57,60-89,96,100,108-109,111-113,128-132,135-153,158,164-166,168-174,178,180-181,184,187-188,191-193,195-196,198-199,202-207,210-214,217-221,224-228,231-234,237-241,245-247,250,255,259-273,276-278,281-285,288-295,298-320,330-334,340-344,349-351,357-379,381-387,389-392,394
+apps/shell-react/package.json
+  s_3985d584f1916c::t_79c4273701690e 13
+apps/remote-angular-sales/package-lock.json
+  s_3985d584f1916c::t_5b90bb4651b813 17,32-35,3921-3923
+apps/remote-angular-sales/src/app/event-bus.ts
+  s_3985d584f1916c::t_a6bcc4a6d5ce70 1
+apps/shell-react/src/App.tsx
+  s_3985d584f1916c::t_df25ed89a3ec95 172-173,181-192,195-196,199-204,206-209,211-236,238-273,283,285-286,290,299,301-302,306
+shared/mfe-events/index.d.ts
+  s_3985d584f1916c::t_1a15ce4a63deca 1-40
+README.md
+  s_3985d584f1916c::t_ab98fb585b1657 17-20,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "ab420e1963063c2871f47c87f04648d786118039",
+  "prompts": {},
+  "sessions": {
+    "s_3985d584f1916c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c0904dcb-96db-4ae4-9515-badf1f91532e",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Alan Nunes <alan.hsouza@mercadolivre.com>"
+    }
+  }
+}
