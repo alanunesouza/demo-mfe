@@ -1,13 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-};
-
-const CART_ADD_EVENT = 'sales:cart-add';
-const CART_CLEAR_EVENT = 'sales:cart-cleared';
+import { SALES_EVENTS, bus, type CartItem } from './event-bus';
 
 @Component({
   selector: 'checkout-remote-root',
@@ -182,6 +174,8 @@ const CART_CLEAR_EVENT = 'sales:cart-cleared';
 })
 export class AppComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
+  private unsubscribeCartAdd?: () => void;
+  private unsubscribeCartClear?: () => void;
 
   constructor(private readonly ngZone: NgZone) {}
 
@@ -189,9 +183,7 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.cartItems.reduce((sum, item) => sum + item.price, 0);
   }
 
-  private readonly handleCartAdd = (event: Event) => {
-    const customEvent = event as CustomEvent<CartItem>;
-    const item = customEvent.detail;
+  private readonly handleCartAdd = (item: CartItem) => {
 
     if (!item) {
       return;
@@ -209,16 +201,16 @@ export class AppComponent implements OnInit, OnDestroy {
   };
 
   ngOnInit(): void {
-    window.addEventListener(CART_ADD_EVENT, this.handleCartAdd);
-    window.addEventListener(CART_CLEAR_EVENT, this.handleCartClear);
+    this.unsubscribeCartAdd = bus.on(SALES_EVENTS.CART_ADD, this.handleCartAdd);
+    this.unsubscribeCartClear = bus.on(SALES_EVENTS.CART_CLEARED, this.handleCartClear);
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener(CART_ADD_EVENT, this.handleCartAdd);
-    window.removeEventListener(CART_CLEAR_EVENT, this.handleCartClear);
+    this.unsubscribeCartAdd?.();
+    this.unsubscribeCartClear?.();
   }
 
   clearCart(): void {
-    window.dispatchEvent(new CustomEvent(CART_CLEAR_EVENT));
+    bus.emit(SALES_EVENTS.CART_CLEARED);
   }
 }

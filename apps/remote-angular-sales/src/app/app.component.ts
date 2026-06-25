@@ -1,4 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { SALES_EVENTS, bus, type CartItem } from './event-bus';
 
 type Product = {
   id: number;
@@ -11,16 +12,6 @@ type Product = {
 type SearchDetail = {
   query?: string;
 };
-
-type CartItemDetail = {
-  id: number;
-  name: string;
-  price: number;
-};
-
-const SEARCH_EVENT = 'sales:search-changed';
-const CART_ADD_EVENT = 'sales:cart-add';
-const CART_CLEAR_EVENT = 'sales:cart-cleared';
 
 const PRODUCTS: Product[] = [
   {
@@ -233,12 +224,12 @@ const PRODUCTS: Product[] = [
 export class AppComponent implements OnInit, OnDestroy {
   currentQuery = '';
   filteredProducts = PRODUCTS;
+  private unsubscribeSearch?: () => void;
 
   constructor(private readonly ngZone: NgZone) {}
 
-  private readonly handleSearchChange = (event: Event) => {
-    const customEvent = event as CustomEvent<SearchDetail>;
-    const query = customEvent.detail?.query?.trim().toLowerCase() ?? '';
+  private readonly handleSearchChange = (detail: SearchDetail) => {
+    const query = detail.query?.trim().toLowerCase() ?? '';
 
     this.ngZone.run(() => {
       this.currentQuery = query;
@@ -254,25 +245,21 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   };
 
-  private readonly handleCartClear = () => {};
-
   ngOnInit(): void {
-    window.addEventListener(SEARCH_EVENT, this.handleSearchChange);
-    window.addEventListener(CART_CLEAR_EVENT, this.handleCartClear);
+    this.unsubscribeSearch = bus.on(SALES_EVENTS.SEARCH_CHANGED, this.handleSearchChange);
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener(SEARCH_EVENT, this.handleSearchChange);
-    window.removeEventListener(CART_CLEAR_EVENT, this.handleCartClear);
+    this.unsubscribeSearch?.();
   }
 
   addToCart(product: Product): void {
-    const item: CartItemDetail = {
+    const item: CartItem = {
       id: product.id,
       name: product.name,
       price: product.price,
     };
 
-    window.dispatchEvent(new CustomEvent(CART_ADD_EVENT, { detail: item }));
+    bus.emit(SALES_EVENTS.CART_ADD, item);
   }
 }

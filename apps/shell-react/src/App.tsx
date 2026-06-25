@@ -1,15 +1,6 @@
 import { useEffect, useState } from 'react';
 import { registerApplication, start } from 'single-spa';
-
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-};
-
-const SEARCH_EVENT = 'sales:search-changed';
-const CART_ADD_EVENT = 'sales:cart-add';
-const CART_CLEAR_EVENT = 'sales:cart-cleared';
+import { SALES_EVENTS, bus, type CartItem } from './shared/event-bus';
 const SALES_REMOTE_BASE = 'http://localhost:4201';
 const CHECKOUT_REMOTE_BASE = 'http://localhost:4202';
 
@@ -142,18 +133,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent(SEARCH_EVENT, {
-        detail: { query: searchQuery },
-      }),
-    );
+    bus.emit(SALES_EVENTS.SEARCH_CHANGED, { query: searchQuery });
   }, [searchQuery]);
 
   useEffect(() => {
-    const handleCartAdd = (event: Event) => {
-      const customEvent = event as CustomEvent<CartItem>;
-      const item = customEvent.detail;
-
+    const unsubscribeCartAdd = bus.on(SALES_EVENTS.CART_ADD, (item) => {
       if (!item) {
         return;
       }
@@ -171,18 +155,15 @@ function App() {
 
         return [...currentItems, item];
       });
-    };
+    });
 
-    const handleCartClear = () => {
+    const unsubscribeCartClear = bus.on(SALES_EVENTS.CART_CLEARED, () => {
       setCartItems([]);
-    };
-
-    window.addEventListener(CART_ADD_EVENT, handleCartAdd);
-    window.addEventListener(CART_CLEAR_EVENT, handleCartClear);
+    });
 
     return () => {
-      window.removeEventListener(CART_ADD_EVENT, handleCartAdd);
-      window.removeEventListener(CART_CLEAR_EVENT, handleCartClear);
+      unsubscribeCartAdd();
+      unsubscribeCartClear();
     };
   }, []);
 
@@ -190,7 +171,7 @@ function App() {
   const totalItems = cartItems.length;
 
   const clearCart = () => {
-    window.dispatchEvent(new CustomEvent(CART_CLEAR_EVENT));
+    bus.emit(SALES_EVENTS.CART_CLEARED);
   };
 
   return (
