@@ -1,0 +1,51 @@
+apps/shell-react/src/shared/event-bus.ts
+  s_3985d584f1916c::t_f3b1ed67985a90 7-18
+README.md
+  s_3985d584f1916c::t_3cc0512f896306 73-85,87-108,110-111,113-117,119-121,123-126
+  s_3985d584f1916c::t_aee368c118aec4 3,5,7,12-13,15,17,19-27,29-31,33-36,38-39,41,66-72
+  s_3985d584f1916c::t_49e164d324f4ef 42-65
+  s_3985d584f1916c::t_3c43a57127a466 9,28,32,37,40,109,118,122,127
+  s_3985d584f1916c::t_655a922cfad65c 11,86,112
+apps/shell-react/src/App.tsx
+  s_3985d584f1916c::t_446962c59bb5a8 3,136,140,158,160,162,165-166,174
+apps/remote-angular-checkout/src/app/app.component.ts
+  s_423f3cf3d69589::t_b959558494e18e 177-178,186,209-210
+  s_3985d584f1916c::t_912473a95b691f 2,204-205,214
+apps/remote-angular-checkout/src/app/event-bus.ts
+  s_3985d584f1916c::t_9598344afb0e00 7-12,14,17-18
+  s_423f3cf3d69589::t_f97c62b3538000 1-6,13,15-16,19-56
+apps/remote-angular-sales/src/app/event-bus.ts
+  s_423f3cf3d69589::t_27dcb35fcea38a 1-6,13,15-16,19-56
+  s_3985d584f1916c::t_42226acb7b761c 7-12,14,17-18
+apps/remote-angular-sales/src/app/app.component.ts
+  s_423f3cf3d69589::t_2d25c9b659f75f 227,231-232,253,257
+  s_3985d584f1916c::t_2e2c7b8d9cfdc7 2,249,263
+apps/shell-react/index.html
+  s_3985d584f1916c::t_556020f5b004b8 7
+apps/shell-react/package.json
+  s_3985d584f1916c::t_874fab8e9520d6 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "93d066c6d81990c29fa3a6090013c223da68e2ae",
+  "prompts": {},
+  "sessions": {
+    "s_3985d584f1916c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c0904dcb-96db-4ae4-9515-badf1f91532e",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Alan Nunes <alan.hsouza@mercadolivre.com>"
+    },
+    "s_423f3cf3d69589": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "48037e1d-2048-498a-9f71-b3101fb0d569",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Alan Nunes <alan.hsouza@mercadolivre.com>"
+    }
+  }
+}
