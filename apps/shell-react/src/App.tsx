@@ -169,6 +169,8 @@ function App() {
 
   const totalValue = cartItems.reduce((sum, item) => sum + item.price, 0);
   const totalItems = cartItems.length;
+  const cartPreview = cartItems.slice(0, 3);
+  const hasItems = totalItems > 0;
 
   const clearCart = () => {
     bus.emit(SALES_EVENTS.CART_CLEARED);
@@ -176,38 +178,99 @@ function App() {
 
   return (
     <main className="page-shell">
-      <header className="hero-card">
-        <div className="hero-copy">
-          <div className="page-badges">
-            <span className="badge badge-react">React shell</span>
-            <span className="badge">Página de vendas</span>
-          </div>
-          <h1>Vendas</h1>
+      <header className="shell-topbar">
+        <div>
+          <span className="eyebrow">Sales microfrontend demo</span>
+          <p className="topbar-copy">React shell + Angular remotes, kept in sync through shared events.</p>
         </div>
-
-        <label className="search-bar" htmlFor="search-products">
-          <span>Busca</span>
-          <input
-            id="search-products"
-            type="search"
-            placeholder="Produto, marca ou categoria"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-          />
-        </label>
+        <span className={`status-pill ${hasItems ? 'status-pill--active' : ''}`}>
+          {hasItems ? 'Cart updated live' : 'Ready to shop'}
+        </span>
       </header>
 
-      <section className="dashboard-grid" id="summary">
-        <article className="panel panel-soft-blue">
-          <div className="panel-topline">
-            <span className="badge badge-react">React</span>
-            <h2>Carrinho</h2>
+      <section className="hero-grid">
+        <article className="hero-card hero-card--featured">
+          <div className="page-badges">
+            <span className="badge badge-react">React shell</span>
+            <span className="badge">Microfrontend orchestration</span>
+            <span className="badge">Window events</span>
           </div>
-          <strong>{totalItems} item(ns)</strong>
-          <p>R$ {totalValue.toFixed(2)}</p>
-          <button type="button" className="ghost-button" onClick={clearCart} disabled={totalItems === 0}>
-            Limpar
+
+          <p className="eyebrow">Microfrontend lab</p>
+          <h1>Clean shell, clearer cart flow.</h1>
+          <p className="lead">
+            The React shell coordinates product search and the cart summary. Angular remotes keep the
+            listing and checkout views focused, while a shared contract keeps every action in sync.
+          </p>
+
+          <div className="hero-highlights" aria-label="Project highlights">
+            <span className="highlight-chip">React shell</span>
+            <span className="highlight-chip">Sales remote</span>
+            <span className="highlight-chip">Checkout remote</span>
+          </div>
+        </article>
+
+        <aside className="summary-card" aria-label="Cart summary">
+          <div className="summary-header">
+            <div>
+              <p className="eyebrow">Cart summary</p>
+              <h2>React shell</h2>
+            </div>
+            <span className={`status-pill status-pill--compact ${hasItems ? 'status-pill--active' : ''}`}>
+              {hasItems ? 'Live' : 'Empty'}
+            </span>
+          </div>
+
+          <div className="summary-metrics">
+            <div className="summary-metric">
+              <strong>{totalItems}</strong>
+              <span>Products</span>
+            </div>
+            <div className="summary-metric">
+              <strong>R$ {totalValue.toFixed(2)}</strong>
+              <span>Total</span>
+            </div>
+          </div>
+
+          <button type="button" className="ghost-button" onClick={clearCart} disabled={!hasItems}>
+            Clear cart
           </button>
+
+          <div className="summary-list">
+            {cartPreview.length > 0 ? (
+              cartPreview.map((item) => (
+                <div className="summary-list__item" key={item.id}>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>Cart item</span>
+                  </div>
+                  <strong>R$ {item.price.toFixed(2)}</strong>
+                </div>
+              ))
+            ) : (
+              <p className="empty-state">
+                Add products from the sales remote and the summary will update here instantly.
+              </p>
+            )}
+          </div>
+        </aside>
+      </section>
+
+      <section className="insight-grid" aria-label="Live insights">
+        <article className="insight-card">
+          <span className="eyebrow">Live sync</span>
+          <strong>Search + cart events</strong>
+          <p>Everything stays coordinated through a typed event contract, not component coupling.</p>
+        </article>
+        <article className="insight-card">
+          <span className="eyebrow">Sales remote</span>
+          <strong>Product browsing</strong>
+          <p>The Angular listing owns filtering and product actions while the shell stays lightweight.</p>
+        </article>
+        <article className="insight-card">
+          <span className="eyebrow">Checkout remote</span>
+          <strong>Detailed cart view</strong>
+          <p>The checkout area reflects the same state and keeps the purchase context visible.</p>
         </article>
       </section>
 
@@ -217,13 +280,14 @@ function App() {
             <div>
               <div className="page-badges page-badges--tight">
                 <span className="badge badge-angular">Angular MFE</span>
-                <span className="badge">Produtos</span>
+                <span className="badge">Sales remote</span>
               </div>
-              <h2>Listagem</h2>
+              <h2>Product listing</h2>
+              <p>Search the catalog and add products to the cart summary above.</p>
             </div>
           </div>
           <div id="remote-angular-sales-root" className="remote-slot" aria-live="polite">
-            <p>Carregando lista de produtos...</p>
+            <p>Loading product listing...</p>
           </div>
         </article>
 
@@ -232,13 +296,14 @@ function App() {
             <div>
               <div className="page-badges page-badges--tight">
                 <span className="badge badge-angular">Angular MFE</span>
-                <span className="badge">Carrinho</span>
+                <span className="badge">Checkout remote</span>
               </div>
-              <h2>Resumo</h2>
+              <h2>Checkout summary</h2>
+              <p>Review the same cart state in a more detailed checkout-focused surface.</p>
             </div>
           </div>
           <div id="remote-angular-checkout-root" className="remote-slot" aria-live="polite">
-            <p>Carregando carrinho...</p>
+            <p>Loading checkout summary...</p>
           </div>
         </article>
       </section>

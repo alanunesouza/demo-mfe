@@ -14,6 +14,10 @@ This workspace contains one shell app and two remotes:
 
 The apps are composed with `single-spa`, allowing each microfrontend to keep its own framework and lifecycle while sharing the same screen.
 
+Event communication contracts are centralized in a shared local package:
+
+- `shared/mfe-events` (imported as `@mfe/events`)
+
 ## Project Goal
 
 Provide a clear and practical microfrontend reference with focus on:
@@ -31,6 +35,7 @@ Provide a clear and practical microfrontend reference with focus on:
 - `single-spa` for microfrontend orchestration
 - `Vite` in the React shell
 - `window`/`CustomEvent`-based event bus for framework-agnostic communication
+- `@mfe/events` local package for shared event names, payload types, and bus API
 
 ## Communication Flow
 

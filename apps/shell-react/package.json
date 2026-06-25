@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mfe/events": "file:../../shared/mfe-events",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "single-spa": "^6.0.3"
