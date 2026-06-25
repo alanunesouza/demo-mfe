@@ -22,100 +22,87 @@ declare global {
   }
 }
 
-function loadSalesRemote() {
-  return new Promise<NonNullable<Window['salesAngularRemote']>>((resolve, reject) => {
-    if (window.salesAngularRemote) {
-      resolve(window.salesAngularRemote);
-      return;
-    }
+type RemoteWindowKey = 'salesAngularRemote' | 'checkoutAngularRemote';
 
-    const loadScript = (src: string, dataAttr: string, label: string) =>
-      new Promise<void>((scriptResolve, scriptReject) => {
-        const existingScript = document.querySelector(`script[${dataAttr}]`);
-        if (existingScript) {
-          scriptResolve();
-          return;
-        }
+type RemoteLoaderConfig<T extends RemoteWindowKey> = {
+  remoteName: 'sales' | 'checkout';
+  baseUrl: string;
+  remoteWindowKey: T;
+  missingLifecycleError: string;
+};
 
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        script.id = `sales-${label}`;
-        script.setAttribute(dataAttr, 'true');
-        script.dataset.remote = 'sales';
-        script.dataset.bundle = label;
-        script.dataset.source = src;
-        script.onload = () => scriptResolve();
-        script.onerror = () => scriptReject(new Error(`Não foi possível carregar ${src}.`));
-        document.head.appendChild(script);
-      });
+const REMOTE_BUNDLES = ['runtime', 'polyfills', 'main'] as const;
 
-    console.info('[shell] loading sales remote');
+function createRemoteLoader<T extends RemoteWindowKey>(config: RemoteLoaderConfig<T>) {
+  return () =>
+    new Promise<NonNullable<Window[T]>>((resolve, reject) => {
+      const existingRemote = window[config.remoteWindowKey];
+      if (existingRemote) {
+        resolve(existingRemote as NonNullable<Window[T]>);
+        return;
+      }
 
-    Promise.resolve()
-      // 1. Carrega o motor de runtime do Webpack/Angular
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/runtime.js`, 'data-sales-remote-runtime', 'runtime'))
-      // 2. Carrega os polyfills para garantir compatibilidade com o navegador
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/polyfills.js`, 'data-sales-remote-polyfills', 'polyfills'))
-      // 3. Carrega o código de negócio (Onde está o AppModule e o singleSpaAngular)
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/main.js`, 'data-sales-remote-main', 'main'))
-      .then(() => {
-        if (window.salesAngularRemote) {
-          console.info('[shell] sales remote ready');
-          resolve(window.salesAngularRemote);
-        } else {
-          reject(new Error('O microfrontend Angular de vendas não registrou o lifecycle.'));
-        }
-      })
-      .catch(reject);
-  });
+      const loadScript = (src: string, dataAttr: string, bundle: string) =>
+        new Promise<void>((scriptResolve, scriptReject) => {
+          const existingScript = document.querySelector(`script[${dataAttr}]`);
+          if (existingScript) {
+            scriptResolve();
+            return;
+          }
+
+          const script = document.createElement('script');
+          script.src = src;
+          script.async = false;
+          script.id = `${config.remoteName}-${bundle}`;
+          script.setAttribute(dataAttr, 'true');
+          script.dataset.remote = config.remoteName;
+          script.dataset.bundle = bundle;
+          script.dataset.source = src;
+          script.onload = () => scriptResolve();
+          script.onerror = () => scriptReject(new Error(`Não foi possível carregar ${src}.`));
+          document.head.appendChild(script);
+        });
+
+      console.info(`[shell] loading ${config.remoteName} remote`);
+
+      REMOTE_BUNDLES.reduce(
+        (loadChain, bundle) =>
+          loadChain.then(() =>
+            loadScript(
+              `${config.baseUrl}/${bundle}.js`,
+              `data-${config.remoteName}-remote-${bundle}`,
+              bundle,
+            ),
+          ),
+        Promise.resolve(),
+      )
+        .then(() => {
+          const loadedRemote = window[config.remoteWindowKey];
+          if (loadedRemote) {
+            console.info(`[shell] ${config.remoteName} remote ready`);
+            resolve(loadedRemote as NonNullable<Window[T]>);
+            return;
+          }
+
+          reject(new Error(config.missingLifecycleError));
+        })
+        .catch(reject);
+    });
 }
 
-function loadCheckoutRemote() {
-  return new Promise<NonNullable<Window['checkoutAngularRemote']>>((resolve, reject) => {
-    if (window.checkoutAngularRemote) {
-      resolve(window.checkoutAngularRemote);
-      return;
-    }
+const loadSalesRemote = createRemoteLoader({
+  remoteName: 'sales',
+  baseUrl: SALES_REMOTE_BASE,
+  remoteWindowKey: 'salesAngularRemote',
+  missingLifecycleError: 'O microfrontend Angular de vendas não registrou o lifecycle.',
+});
 
-    const loadScript = (src: string, dataAttr: string, label: string) =>
-      new Promise<void>((scriptResolve, scriptReject) => {
-        const existingScript = document.querySelector(`script[${dataAttr}]`);
-        if (existingScript) {
-          scriptResolve();
-          return;
-        }
-
-        const script = document.createElement('script');
-        script.src = src;
-        script.async = false;
-        script.id = `checkout-${label}`;
-        script.setAttribute(dataAttr, 'true');
-        script.dataset.remote = 'checkout';
-        script.dataset.bundle = label;
-        script.dataset.source = src;
-        script.onload = () => scriptResolve();
-        script.onerror = () => scriptReject(new Error(`Não foi possível carregar ${src}.`));
-        document.head.appendChild(script);
-      });
-
-    console.info('[shell] loading checkout remote');
-
-    Promise.resolve()
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/runtime.js`, 'data-checkout-remote-runtime', 'runtime'))
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/polyfills.js`, 'data-checkout-remote-polyfills', 'polyfills'))
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/main.js`, 'data-checkout-remote-main', 'main'))
-      .then(() => {
-        if (window.checkoutAngularRemote) {
-          console.info('[shell] checkout remote ready');
-          resolve(window.checkoutAngularRemote);
-        } else {
-          reject(new Error('O microfrontend Angular de checkout não registrou o lifecycle.'));
-        }
-      })
-      .catch(reject);
-  });
-}
+const loadCheckoutRemote = createRemoteLoader({
+  remoteName: 'checkout',
+  baseUrl: CHECKOUT_REMOTE_BASE,
+  remoteWindowKey: 'checkoutAngularRemote',
+  missingLifecycleError: 'O microfrontend Angular de checkout não registrou o lifecycle.',
+});
 
 if (!window.__salesMfeRegistered) {
   registerApplication({
