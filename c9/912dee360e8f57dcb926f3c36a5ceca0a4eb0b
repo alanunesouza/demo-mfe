@@ -1,0 +1,25 @@
+apps/shell-react/src/App.tsx
+  s_3985d584f1916c::t_7069167f9dba4c 210,212-220
+  s_3985d584f1916c::t_a31ab19aaf62a0 32,43,45-47,53-54,57,59,61,64,81,92,94-96,102-103,105-107,110
+  s_3985d584f1916c::t_5a1a439dd7bf49 199-200,203-204,206-207,211,221-233,292,308
+apps/shell-react/src/styles.css
+  s_3985d584f1916c::t_1787be5945493a 221-223,413-414
+  s_3985d584f1916c::t_410ee5d6d4820b 184-192,195-205,207-216
+  s_3985d584f1916c::t_4a47a2c3e7fa97 217-220,224-227,229-239,388-391,411-412
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c9912dee360e8f57dcb926f3c36a5ceca0a4eb0b",
+  "prompts": {},
+  "sessions": {
+    "s_3985d584f1916c": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "c0904dcb-96db-4ae4-9515-badf1f91532e",
+        "model": "gpt-5-mini"
+      },
+      "human_author": "Alan Nunes <alan.hsouza@mercadolivre.com>"
+    }
+  }
+}
