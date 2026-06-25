@@ -29,7 +29,7 @@ function loadSalesRemote() {
       return;
     }
 
-    const loadScript = (src: string, dataAttr: string) =>
+    const loadScript = (src: string, dataAttr: string, label: string) =>
       new Promise<void>((scriptResolve, scriptReject) => {
         const existingScript = document.querySelector(`script[${dataAttr}]`);
         if (existingScript) {
@@ -40,21 +40,28 @@ function loadSalesRemote() {
         const script = document.createElement('script');
         script.src = src;
         script.async = false;
+        script.id = `sales-${label}`;
         script.setAttribute(dataAttr, 'true');
+        script.dataset.remote = 'sales';
+        script.dataset.bundle = label;
+        script.dataset.source = src;
         script.onload = () => scriptResolve();
         script.onerror = () => scriptReject(new Error(`Não foi possível carregar ${src}.`));
         document.head.appendChild(script);
       });
 
+    console.info('[shell] loading sales remote');
+
     Promise.resolve()
       // 1. Carrega o motor de runtime do Webpack/Angular
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/runtime.js`, 'data-sales-remote-runtime'))
+      .then(() => loadScript(`${SALES_REMOTE_BASE}/runtime.js`, 'data-sales-remote-runtime', 'runtime'))
       // 2. Carrega os polyfills para garantir compatibilidade com o navegador
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/polyfills.js`, 'data-sales-remote-polyfills'))
+      .then(() => loadScript(`${SALES_REMOTE_BASE}/polyfills.js`, 'data-sales-remote-polyfills', 'polyfills'))
       // 3. Carrega o código de negócio (Onde está o AppModule e o singleSpaAngular)
-      .then(() => loadScript(`${SALES_REMOTE_BASE}/main.js`, 'data-sales-remote-main'))
+      .then(() => loadScript(`${SALES_REMOTE_BASE}/main.js`, 'data-sales-remote-main', 'main'))
       .then(() => {
         if (window.salesAngularRemote) {
+          console.info('[shell] sales remote ready');
           resolve(window.salesAngularRemote);
         } else {
           reject(new Error('O microfrontend Angular de vendas não registrou o lifecycle.'));
@@ -71,7 +78,7 @@ function loadCheckoutRemote() {
       return;
     }
 
-    const loadScript = (src: string, dataAttr: string) =>
+    const loadScript = (src: string, dataAttr: string, label: string) =>
       new Promise<void>((scriptResolve, scriptReject) => {
         const existingScript = document.querySelector(`script[${dataAttr}]`);
         if (existingScript) {
@@ -82,18 +89,25 @@ function loadCheckoutRemote() {
         const script = document.createElement('script');
         script.src = src;
         script.async = false;
+        script.id = `checkout-${label}`;
         script.setAttribute(dataAttr, 'true');
+        script.dataset.remote = 'checkout';
+        script.dataset.bundle = label;
+        script.dataset.source = src;
         script.onload = () => scriptResolve();
         script.onerror = () => scriptReject(new Error(`Não foi possível carregar ${src}.`));
         document.head.appendChild(script);
       });
 
+    console.info('[shell] loading checkout remote');
+
     Promise.resolve()
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/runtime.js`, 'data-checkout-remote-runtime'))
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/polyfills.js`, 'data-checkout-remote-polyfills'))
-      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/main.js`, 'data-checkout-remote-main'))
+      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/runtime.js`, 'data-checkout-remote-runtime', 'runtime'))
+      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/polyfills.js`, 'data-checkout-remote-polyfills', 'polyfills'))
+      .then(() => loadScript(`${CHECKOUT_REMOTE_BASE}/main.js`, 'data-checkout-remote-main', 'main'))
       .then(() => {
         if (window.checkoutAngularRemote) {
+          console.info('[shell] checkout remote ready');
           resolve(window.checkoutAngularRemote);
         } else {
           reject(new Error('O microfrontend Angular de checkout não registrou o lifecycle.'));
@@ -178,35 +192,45 @@ function App() {
 
   return (
     <main className="page-shell">
-      <header className="shell-topbar">
-        <div>
-          <span className="eyebrow">Sales microfrontend demo</span>
-          <p className="topbar-copy">React shell + Angular remotes, kept in sync through shared events.</p>
-        </div>
-        <span className={`status-pill ${hasItems ? 'status-pill--active' : ''}`}>
-          {hasItems ? 'Cart updated live' : 'Ready to shop'}
-        </span>
-      </header>
-
       <section className="hero-grid">
         <article className="hero-card hero-card--featured">
           <div className="page-badges">
             <span className="badge badge-react">React shell</span>
-            <span className="badge">Microfrontend orchestration</span>
-            <span className="badge">Window events</span>
+            <span className="badge">Sales remote</span>
+            <span className="badge">Checkout remote</span>
           </div>
 
-          <p className="eyebrow">Microfrontend lab</p>
-          <h1>Clean shell, clearer cart flow.</h1>
+          <p className="eyebrow">Storefront</p>
+          <h1>One page. Three apps.</h1>
           <p className="lead">
-            The React shell coordinates product search and the cart summary. Angular remotes keep the
-            listing and checkout views focused, while a shared contract keeps every action in sync.
+            The shell frames the experience, Sales handles browsing, and Checkout keeps the cart
+            detail visible.
           </p>
 
-          <div className="hero-highlights" aria-label="Project highlights">
-            <span className="highlight-chip">React shell</span>
-            <span className="highlight-chip">Sales remote</span>
-            <span className="highlight-chip">Checkout remote</span>
+          <label className="search-bar" htmlFor="search-products">
+            <span>Find products</span>
+            <input
+              id="search-products"
+              type="search"
+              placeholder="Product, brand, or category"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+            />
+          </label>
+
+          <div className="module-strip" aria-label="App modules">
+            <article className="module-card">
+              <span className="eyebrow">Shell</span>
+              <strong>Layout and cart summary</strong>
+            </article>
+            <article className="module-card">
+              <span className="eyebrow">Sales</span>
+              <strong>Product browsing</strong>
+            </article>
+            <article className="module-card">
+              <span className="eyebrow">Checkout</span>
+              <strong>Cart details</strong>
+            </article>
           </div>
         </article>
 
@@ -256,24 +280,6 @@ function App() {
         </aside>
       </section>
 
-      <section className="insight-grid" aria-label="Live insights">
-        <article className="insight-card">
-          <span className="eyebrow">Live sync</span>
-          <strong>Search + cart events</strong>
-          <p>Everything stays coordinated through a typed event contract, not component coupling.</p>
-        </article>
-        <article className="insight-card">
-          <span className="eyebrow">Sales remote</span>
-          <strong>Product browsing</strong>
-          <p>The Angular listing owns filtering and product actions while the shell stays lightweight.</p>
-        </article>
-        <article className="insight-card">
-          <span className="eyebrow">Checkout remote</span>
-          <strong>Detailed cart view</strong>
-          <p>The checkout area reflects the same state and keeps the purchase context visible.</p>
-        </article>
-      </section>
-
       <section className="remote-grid">
         <article className="remote-section" id="sales-remote">
           <div className="remote-section__header">
@@ -283,7 +289,7 @@ function App() {
                 <span className="badge">Sales remote</span>
               </div>
               <h2>Product listing</h2>
-              <p>Search the catalog and add products to the cart summary above.</p>
+              <p>Browse products and add items to the cart.</p>
             </div>
           </div>
           <div id="remote-angular-sales-root" className="remote-slot" aria-live="polite">
@@ -299,7 +305,7 @@ function App() {
                 <span className="badge">Checkout remote</span>
               </div>
               <h2>Checkout summary</h2>
-              <p>Review the same cart state in a more detailed checkout-focused surface.</p>
+              <p>Review the same cart state in a dedicated checkout surface.</p>
             </div>
           </div>
           <div id="remote-angular-checkout-root" className="remote-slot" aria-live="polite">
